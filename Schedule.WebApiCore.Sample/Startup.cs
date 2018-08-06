@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -18,37 +19,56 @@ namespace Schedule.WebApiCore.Sample
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
+
+        public Startup(IConfiguration configuration, IHostingEnvironment hostingEnvironment)
+        {
+            this.HostingEnvironment = hostingEnvironment;
+            this.Configuration = configuration;
+        }
+
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(provider =>
+            services.AddLogging();
+
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .AddJsonFile($"appsettings.{this.HostingEnvironment.EnvironmentName.ToLower()}.json")
+                .Build());
+
+
+            services.AddSingleton<IJobFactory, ScheduledJobFactory>();
+
+            //services.Add(jobs.Select(jobType => new ServiceDescriptor(jobType, jobType, ServiceLifetime.Singleton)));
+
+            services.AddSingleton(async provider =>
             {
                 var schedulerFactory = new StdSchedulerFactory();
-                var scheduler = schedulerFactory.GetScheduler();
+                var scheduler = await schedulerFactory.GetScheduler();
 
                 IJobDetail job = JobBuilder.Create<ScheduledJob>()
-                    .WithIdentity("FiveSecondsJob", "SampleJobs") // name "myJob", group "group1"
+                    .WithIdentity("FiveSecondsJob", "group1") // name "myJob", group "group1"
                     .Build();
 
                 ITrigger trigger = TriggerBuilder.Create()
+                 .WithIdentity($"FiveSecondsJob.trigger", "group1")
+                 .StartNow()
                  .WithSimpleSchedule
                   (s =>
-                     s.WithInterval(TimeSpan.FromSeconds(5))
+                     s.WithInterval(TimeSpan.FromSeconds(3))
                      .RepeatForever()
                   )
-                .Build();
+                  .Build();
 
-                scheduler.
-                //scheduler..(job, trigger);
+                await scheduler.ScheduleJob(job, trigger);
+                await scheduler.Start();
 
-                scheduler.Start();
+
                 return scheduler;
             });
 
