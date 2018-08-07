@@ -13,11 +13,6 @@ namespace Schedule.WebApiCore.Sample.Schedule
         private readonly IConfiguration configuration;
         private readonly ILogger<ScheduledJob> logger;
 
-        public ScheduledJob()
-        {
-
-        }
-
         public ScheduledJob(IConfiguration configuration, ILogger<ScheduledJob> logger)
         {
             this.logger = logger;

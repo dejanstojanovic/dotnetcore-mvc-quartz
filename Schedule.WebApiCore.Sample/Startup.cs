@@ -15,6 +15,7 @@ using Quartz.Impl;
 using Quartz.Spi;
 using Schedule.WebApiCore.Sample.Schedule;
 
+
 namespace Schedule.WebApiCore.Sample
 {
     public class Startup
@@ -41,47 +42,49 @@ namespace Schedule.WebApiCore.Sample
                 .AddJsonFile($"appsettings.{this.HostingEnvironment.EnvironmentName.ToLower()}.json")
                 .Build());
 
+            services.AddSingleton<IJobDetail>(provider =>
+            {
+                return JobBuilder.Create<ScheduledJob>()
+                  .WithIdentity("FiveSecondsJob", "group1")
+                  .Build();
+            });
 
-            services.AddSingleton<IJobFactory, ScheduledJobFactory>();
+            services.AddSingleton<ITrigger>(provider =>
+            {
+                return TriggerBuilder.Create()
+                .WithIdentity($"FiveSecondsJob.trigger", "group1")
+                .StartNow()
+                .WithSimpleSchedule
+                 (s =>
+                    s.WithInterval(TimeSpan.FromSeconds(5))
+                 )
+                 .Build();
+            });
 
-            //services.Add(jobs.Select(jobType => new ServiceDescriptor(jobType, jobType, ServiceLifetime.Singleton)));
-
-            services.AddSingleton(async provider =>
+            services.AddSingleton<IScheduler>(provider =>
             {
                 var schedulerFactory = new StdSchedulerFactory();
-                var scheduler = await schedulerFactory.GetScheduler();
-
-                IJobDetail job = JobBuilder.Create<ScheduledJob>()
-                    .WithIdentity("FiveSecondsJob", "group1") // name "myJob", group "group1"
-                    .Build();
-
-                ITrigger trigger = TriggerBuilder.Create()
-                 .WithIdentity($"FiveSecondsJob.trigger", "group1")
-                 .StartNow()
-                 .WithSimpleSchedule
-                  (s =>
-                     s.WithInterval(TimeSpan.FromSeconds(3))
-                     .RepeatForever()
-                  )
-                  .Build();
-
-                await scheduler.ScheduleJob(job, trigger);
-                await scheduler.Start();
-
-
+                var scheduler = schedulerFactory.GetScheduler().Result;
+                //var jobSchedule = scheduler.ScheduleJob(provider.GetService<IJobDetail>(), provider.GetService<ITrigger>()).Result;
                 return scheduler;
             });
+
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IScheduler scheduler)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //scheduler.Start();
+
+            scheduler.ScheduleJob(app.ApplicationServices.GetService<IJobDetail>(), app.ApplicationServices.GetService<ITrigger>());
+            scheduler.Start();
 
             app.UseMvc();
         }
