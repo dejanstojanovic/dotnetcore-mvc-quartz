@@ -21,7 +21,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
         public async Task Execute(IJobExecutionContext context)
         {
 
-            this.logger.LogInformation($"Hello from scheduled task {DateTime.Now.ToLongTimeString()}");
+            this.logger.LogWarning($"Hello from scheduled task {DateTime.Now.ToLongTimeString()}");
 
             await Task.CompletedTask;
             
