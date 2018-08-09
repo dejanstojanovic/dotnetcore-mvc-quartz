@@ -18,12 +18,16 @@ namespace Schedule.WebApiCore.Sample.Schedule
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return serviceProvider.GetService(bundle.JobDetail.JobType) as IJob;
+            return serviceProvider.GetService(typeof(ScheduledJob)) as IJob;
         }
 
-        public void ReturnJob(IJob job)
-        {
-            
+        public void ReturnJob(IJob job) {
+            var disposable = job as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
         }
+        
     }
 }

@@ -2,8 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Quartz;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Schedule.WebApiCore.Sample.Schedule
@@ -12,6 +10,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
     {
         private readonly IConfiguration configuration;
         private readonly ILogger<ScheduledJob> logger;
+
 
         public ScheduledJob(IConfiguration configuration, ILogger<ScheduledJob> logger)
         {
@@ -22,7 +21,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
         public async Task Execute(IJobExecutionContext context)
         {
 
-            this.logger.LogInformation("Hello from scheduled job");
+            this.logger.LogInformation($"Hello from scheduled task {DateTime.Now.ToLongTimeString()}");
 
             await Task.CompletedTask;
             
