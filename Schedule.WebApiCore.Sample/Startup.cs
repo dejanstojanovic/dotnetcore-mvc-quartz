@@ -39,7 +39,7 @@ namespace Schedule.WebApiCore.Sample
 
             //#region Configure Quartz DI
 
-            //services.Add(new ServiceDescriptor(typeof(ScheduledJob), typeof(ScheduledJob), ServiceLifetime.Transient));
+            //services.Add(new ServiceDescriptor(typeof(IJob), typeof(ScheduledJob), ServiceLifetime.Transient));
             //services.AddSingleton<IJobFactory, ScheduledJobFactory>();
             //services.AddSingleton<IJobDetail>(provider =>
             //{
@@ -78,7 +78,7 @@ namespace Schedule.WebApiCore.Sample
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)//, IScheduler scheduler)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {

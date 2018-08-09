@@ -15,7 +15,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
 
         public IJob NewJob(TriggerFiredBundle bundle, IScheduler scheduler)
         {
-            return serviceProvider.GetService(typeof(ScheduledJob)) as IJob;
+            return serviceProvider.GetService(typeof(IJob)) as IJob;
         }
 
         public void ReturnJob(IJob job) {

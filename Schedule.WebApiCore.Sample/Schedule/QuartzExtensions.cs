@@ -4,9 +4,6 @@ using Quartz;
 using Quartz.Impl;
 using Quartz.Spi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Schedule.WebApiCore.Sample.Schedule
 {
@@ -14,7 +11,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
     {
         public static void AddQuartz(this IServiceCollection services, Type jobType)
         {
-            services.Add(new ServiceDescriptor(jobType, jobType, ServiceLifetime.Transient));
+            services.Add(new ServiceDescriptor(typeof(IJob), jobType, ServiceLifetime.Transient));
             services.AddSingleton<IJobFactory, ScheduledJobFactory>();
             services.AddSingleton<IJobDetail>(provider =>
             {
