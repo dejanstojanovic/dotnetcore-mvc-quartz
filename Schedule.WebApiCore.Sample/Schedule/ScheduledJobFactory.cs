@@ -1,9 +1,6 @@
 ﻿using Quartz;
 using Quartz.Spi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Schedule.WebApiCore.Sample.Schedule
 {

@@ -14,7 +14,7 @@ namespace Schedule.WebApiCore.Sample.Schedule
     {
         public static void AddQuartz(this IServiceCollection services, Type jobType)
         {
-            services.Add(new ServiceDescriptor(jobType, jobType, ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(jobType, jobType, ServiceLifetime.Transient));
             services.AddSingleton<IJobFactory, ScheduledJobFactory>();
             services.AddSingleton<IJobDetail>(provider =>
             {

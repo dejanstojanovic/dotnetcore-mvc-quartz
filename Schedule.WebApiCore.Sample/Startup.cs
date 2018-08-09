@@ -39,7 +39,7 @@ namespace Schedule.WebApiCore.Sample
 
             //#region Configure Quartz DI
 
-            //services.Add(new ServiceDescriptor(typeof(ScheduledJob), typeof(ScheduledJob), ServiceLifetime.Singleton));
+            //services.Add(new ServiceDescriptor(typeof(ScheduledJob), typeof(ScheduledJob), ServiceLifetime.Transient));
             //services.AddSingleton<IJobFactory, ScheduledJobFactory>();
             //services.AddSingleton<IJobDetail>(provider =>
             //{
