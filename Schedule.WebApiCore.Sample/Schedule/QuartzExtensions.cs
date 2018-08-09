@@ -36,6 +36,15 @@ namespace Schedule.WebApiCore.Sample.Schedule
                  .Build();
             });
 
+            services.AddSingleton<IScheduler>(provider =>
+            {
+                var schedulerFactory = new StdSchedulerFactory();
+                var scheduler = schedulerFactory.GetScheduler().Result;
+                scheduler.JobFactory = provider.GetService<IJobFactory>();
+                scheduler.Start();
+                return scheduler;
+            });
+
         }
 
         public static void UseQuartz (this IApplicationBuilder app)
